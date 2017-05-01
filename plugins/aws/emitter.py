@@ -1,6 +1,9 @@
-import plugins.aws.emitter
+import plugins.emitter
 
 
-class Emitter(plugins.aws.emitter):
-    def emit_command(self):
-        print "aws emit_command"
+class Emitter(plugins.emitter.Emitter):
+    def __init__(self):
+        super(Emitter, self).__init__()
+
+    def emit_command(self, **kwargs):
+        print "aws emit_command", kwargs

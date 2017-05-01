@@ -2,6 +2,18 @@ class Emitter(object):
     """
     The base class for emitters.
     """
+    def __init__(self):
+        self.emitters = {
+            'command': self.emit_command
+        }
+
+    def emit(self, conf):
+        steps = conf['steps']
+        for step in steps:
+            step_type = step['type']
+            emitter = self.emitters[step_type]
+            emitter(**step)
+
     def emit_command(self, **kwargs):
         """
 
