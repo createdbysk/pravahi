@@ -4,7 +4,7 @@ class Emitter(object):
     """
     def __init__(self):
         self.emitters = {
-            'command': self.emit_command
+            'command': self.__emit_command
         }
 
     def emit(self, conf):
@@ -14,7 +14,7 @@ class Emitter(object):
             emitter = self.emitters[step_type]
             emitter(**step)
 
-    def emit_command(self, **kwargs):
+    def __emit_command(self, **kwargs):
         """
 
         :param kwargs: {"name": "The name of the step", "command": "The command to execute"}
