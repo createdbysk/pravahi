@@ -7,18 +7,42 @@ class AwsUtilitiesError(Exception):
         self.definition = definition
 
 
-def definition_to_api_objects(definition):
+def pipeline_objects_to_api_objects(pipeline_objects):
+    """
+    GIVEN the objects in a data pipeline in the data pipeline definition format
+    WHEN pipeline_objects_to_api_objects() runs
+    THEN it returns objects in the format required by the boto3 api.
+
+    Example input:
+    [{
+        "id": "id",
+        "name": "name",
+        "command": "echo hello world"
+    }]
+
+    Example return:
+    [{
+        "id": "id",
+        "name": "name",
+        "fields": [{
+            "key": "command",
+            "stringValue": "echo hello world"
+        }]
+    }]
+    :param pipeline_objects: Objects in the pipeline objects format.
+    :return: Objects in the api objects format.
+    """
     import json
     api_elements = []
     # To convert to the structure expected by the service,
     # we convert the existing structure to a list of dictionaries.
     # Each dictionary has a 'fields', 'id', and 'name' key.
-    for element in definition:
+    for element in pipeline_objects:
         try:
             element_id = element.pop('id')
         except KeyError:
             raise AwsUtilitiesError('Missing "id" key of element: %s' %
-                                    json.dumps(element), definition)
+                                    json.dumps(element), pipeline_objects)
         api_object = {'id': element_id}
         # If a name is provided, then we use that for the name,
         # otherwise the id is used for the name.
