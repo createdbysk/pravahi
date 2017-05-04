@@ -7,55 +7,52 @@ class AwsUtilitiesError(Exception):
         self.definition = definition
 
 
-def pipeline_objects_to_api_objects(pipeline_objects):
+def pipeline_object_to_api_object(pipeline_object):
     """
-    GIVEN the objects in a data pipeline in the data pipeline definition format
-    WHEN pipeline_objects_to_api_objects() runs
-    THEN it returns objects in the format required by the boto3 api.
+    GIVEN an object in a data pipeline in the data pipeline definition format
+    WHEN pipeline_object_to_api_object() runs
+    THEN it returns the equivalent object in the format required by the boto3 api.
 
     Example input:
-    [{
+    {
         "id": "id",
         "name": "name",
         "command": "echo hello world"
-    }]
+    }
 
     Example return:
-    [{
+    {
         "id": "id",
         "name": "name",
         "fields": [{
             "key": "command",
             "stringValue": "echo hello world"
         }]
-    }]
-    :param pipeline_objects: Objects in the pipeline objects format.
-    :return: Objects in the api objects format.
+    }
+
+    :param pipeline_object: Object in the pipeline objects format.
+    :return: Object in the api objects format.
     """
     import json
-    api_elements = []
-    # To convert to the structure expected by the service,
-    # we convert the existing structure to a list of dictionaries.
-    # Each dictionary has a 'fields', 'id', and 'name' key.
-    for element in pipeline_objects:
-        try:
-            element_id = element.pop('id')
-        except KeyError:
-            raise AwsUtilitiesError('Missing "id" key of element: %s' %
-                                    json.dumps(element), pipeline_objects)
-        api_object = {'id': element_id}
-        # If a name is provided, then we use that for the name,
-        # otherwise the id is used for the name.
-        name = element.pop('name', element_id)
-        api_object['name'] = name
-        # Now we need the field list.  Each element in the field list is a dict
-        # with a 'key', 'stringValue'|'refValue'
-        fields = []
-        for key, value in sorted(element.items()):
-            fields.extend(_parse_each_field(key, value))
-        api_object['fields'] = fields
-        api_elements.append(api_object)
-    return api_elements
+    import copy
+    element = copy.copy(pipeline_object)
+    try:
+        element_id = element.pop('id')
+    except KeyError:
+        raise AwsUtilitiesError('Missing "id" key of element: %s' %
+                                json.dumps(element), pipeline_object)
+    api_object = {'id': element_id}
+    # If a name is provided, then we use that for the name,
+    # otherwise the id is used for the name.
+    name = element.pop('name', element_id)
+    api_object['name'] = name
+    # Now we need the field list.  Each element in the field list is a dict
+    # with a 'key', 'stringValue'|'refValue'
+    fields = []
+    for key, value in sorted(element.items()):
+        fields.extend(_parse_each_field(key, value))
+    api_object['fields'] = fields
+    return api_object
 
 
 def definition_to_parameter_objects(self, parameters):
