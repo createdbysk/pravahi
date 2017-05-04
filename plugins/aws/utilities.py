@@ -15,14 +15,14 @@ def pipeline_object_to_api_object(pipeline_object):
 
     Example input:
     {
-        "id": "id",
+        "type": "type",
         "name": "name",
         "command": "echo hello world"
     }
 
     Example return:
     {
-        "id": "id",
+        "id": "name",
         "name": "name",
         "fields": [{
             "key": "command",
@@ -36,16 +36,16 @@ def pipeline_object_to_api_object(pipeline_object):
     import json
     import copy
     element = copy.copy(pipeline_object)
+    # Remove the type because it is not required.
+    # Do not error if the type is not present.
+    element.pop('type', None)
     try:
-        element_id = element.pop('id')
+        element_name = element.pop('name')
     except KeyError:
-        raise AwsUtilitiesError('Missing "id" key of element: %s' %
+        raise AwsUtilitiesError('Missing "name" key of element: %s' %
                                 json.dumps(element), pipeline_object)
-    api_object = {'id': element_id}
-    # If a name is provided, then we use that for the name,
-    # otherwise the id is used for the name.
-    name = element.pop('name', element_id)
-    api_object['name'] = name
+    api_object = {'id': element_name,
+                  'name': element_name}
     # Now we need the field list.  Each element in the field list is a dict
     # with a 'key', 'stringValue'|'refValue'
     fields = []

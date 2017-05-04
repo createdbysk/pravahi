@@ -5,13 +5,13 @@ class TestUtitilies(object):
         from nose.tools import assert_dict_equal
         # GIVEN
         pipeline_object = {
-            "id": "id",
+            "type": "type",
             "name": "name",
             "command": "echo hello world"
         }
 
         expected_api_object = {
-            "id": "id",
+            "id": "name",
             "name": "name",
             "fields": [{
                 "key": "command",
