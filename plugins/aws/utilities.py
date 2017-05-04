@@ -46,13 +46,18 @@ def pipeline_object_to_api_object(pipeline_object):
                                 json.dumps(element), pipeline_object)
     api_object = {'id': element_name,
                   'name': element_name}
+    fields = field_dict_to_field_key_value_list(element)
+    api_object['fields'] = fields
+    return api_object
+
+
+def field_dict_to_field_key_value_list(element):
     # Now we need the field list.  Each element in the field list is a dict
     # with a 'key', 'stringValue'|'refValue'
     fields = []
     for key, value in sorted(element.items()):
         fields.extend(_parse_each_field(key, value))
-    api_object['fields'] = fields
-    return api_object
+    return fields
 
 
 def definition_to_parameter_objects(self, parameters):
